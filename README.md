@@ -27,7 +27,7 @@ The user can choose between rock, paper and scissors while the computer randomly
 3. Run `index.html` in browser
 
 ## Live Demo
-
+https://rock-paper-scissors-game-m.vercel.app/
 
 ## What I Learned
 
