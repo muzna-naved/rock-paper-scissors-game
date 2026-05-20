@@ -20,20 +20,6 @@ The user can choose between rock, paper and scissors while the computer randomly
 - CSS3
 - JavaScript
 
-## Project Structure
-
-project-folder/
-│
-├── index.html
-├── style.css
-├── app.js
-├── logo.svg
-├── bg-triangle.svg
-├── icon-paper.svg
-├── icon-rock.svg
-├── icon-scissors.svg
-└── image-rules.svg
-
 ## How to Run
 
 1. Download or clone the repository
