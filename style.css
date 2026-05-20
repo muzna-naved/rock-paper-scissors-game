@@ -1,0 +1,639 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    font-family: "Barlow Semi Condensed", sans-serif;
+    background: radial-gradient(hsl(214, 47%, 23%), hsl(237, 49%, 15%));
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* ── Score Bar ── */
+
+.score-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border: 3px solid hsl(217, 16%, 45%);
+    width: 700px;
+    max-width: 92vw;
+    border-radius: 10px;
+    height: 130px;
+    flex-shrink: 0;
+}
+
+.score {
+    background-color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 7px;
+    height: 90%;
+    padding: 6px 15px;
+    width: 130px;
+}
+
+.score h5 {
+    color: hsl(229, 64%, 46%);
+    font-size: 18px;
+    letter-spacing: 0.1em;
+    padding-top: 1rem;
+}
+
+.score h3 {
+    color: hsl(229, 25%, 31%);
+    font-size: 4rem;
+    font-weight: 700;
+}
+
+
+/* ── Game Grid ── */
+
+.game {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas: "paper scissors" "rock rock";
+    place-items: center;
+    row-gap: 1.5rem;
+    column-gap: 6rem;
+    padding-top: 3rem;
+    margin-top: 1rem;
+}
+
+.game::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 15%;
+    top: 29%;
+    background: url(bg-triangle.svg) no-repeat;
+    z-index: -1;
+}
+
+.choice-btn {
+    border: none;
+    outline: none;
+    background: none;
+    cursor: pointer;
+}
+
+.choice {
+    position: relative;
+    width: 9rem;
+    height: 9rem;
+    background: #fff;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    box-shadow: inset 0 0.5rem #00000026;
+}
+
+.choice::before,
+.choice::after {
+    content: "";
+    position: absolute;
+    left: -15%;
+    top: -18%;
+    width: 130%;
+    height: 130%;
+    border-radius: 50%;
+    z-index: -1;
+}
+
+.choice::after {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.choice-btn:focus .choice::after {
+    opacity: 1;
+    box-shadow: 0 0 0 2rem #223351;
+    z-index: -2;
+}
+
+.choice img {
+    transform: scale(1.5);
+}
+
+.choice.paper::before {
+    background: linear-gradient(to bottom, hsl(230, 89%, 62%), hsl(230, 89%, 65%));
+    box-shadow: 0 0.5rem #0000004d, 0 0.5rem hsl(230, 89%, 65%);
+}
+
+.choice.scissors::before {
+    background: linear-gradient(to bottom, hsl(39, 89%, 49%), hsl(40, 84%, 53%));
+    box-shadow: 0 0.5rem #0000004d, 0 0.5rem hsl(40, 84%, 53%);
+}
+
+.choice.rock::before {
+    background: linear-gradient(to bottom, hsl(349, 71%, 52%), hsl(349, 70%, 56%));
+    box-shadow: 0 0.5rem #0000004d, 0 0.5rem hsl(349, 70%, 56%);
+}
+
+.choice-btn[data-choice="paper"] {
+    grid-area: paper;
+}
+
+.choice-btn[data-choice="scissors"] {
+    grid-area: scissors;
+}
+
+.choice-btn[data-choice="rock"] {
+    grid-area: rock;
+}
+
+
+/* ── Results ── */
+
+.results {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: center;
+    grid-template-areas: "you-title ai-title" "you-picked ai-picked";
+    max-width: 1000px;
+    margin: 0 auto;
+    column-gap: 4rem;
+}
+
+.results-heading {
+    margin-top: 2rem;
+    margin-bottom: 8rem;
+    font-size: 2rem;
+    color: #eee;
+    letter-spacing: 0.1em;
+}
+
+.results-result {
+    width: 9rem;
+    height: 9rem;
+    background: #16213d;
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    transform: scale(1.4);
+    z-index: -1;
+}
+
+.results-heading:first-of-type {
+    grid-area: you-title;
+}
+
+.results-heading:last-of-type {
+    grid-area: ai-title;
+}
+
+.results-result:first-of-type {
+    grid-area: you-picked;
+}
+
+.results-result:last-of-type {
+    grid-area: ai-picked;
+}
+
+.results.show-winner {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas: "you-title . ai-title" "you-picked result-winner ai-picked";
+    margin-top: 3rem;
+    place-items: center;
+}
+
+.winner .choice::after {
+    box-shadow: 0 0 0 40px #293251, 0 0 0 80px #232c4b, 0 0 0 130px #1e2949;
+    animation: winner 1s ease forwards;
+}
+
+@keyframes winner {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.result-winner {
+    grid-area: result-winner;
+    display: grid;
+    place-items: center;
+}
+
+.results-text {
+    font-size: 3rem;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.play-again {
+    background: #fff;
+    outline: none;
+    color: #16213d;
+    border: 2px solid transparent;
+    border-radius: 0.6rem;
+    padding: 0.6rem 3.5rem;
+    font-size: 1.3rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+}
+
+.play-again:focus {
+    border: 2px solid hsl(217, 16%, 45%);
+}
+
+.hidden {
+    display: none;
+}
+
+
+/* ── Rules Button ── */
+
+.rules-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: none;
+    outline: none;
+    border: 2px solid hsl(217, 16%, 45%);
+    border-radius: 0.6rem;
+    color: #ffffff;
+    padding: 0.6rem 2.5rem;
+    font-size: 1.3rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+}
+
+.rules-btn:focus {
+    border: 2px solid #fff;
+}
+
+
+/* ── Modal ── */
+
+.backdrop {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+    transition: opacity 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 5;
+}
+
+.modal {
+    visibility: hidden;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #eee;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    z-index: -10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+    width: auto;
+    max-width: 90vw;
+}
+
+.modal.active {
+    visibility: visible;
+    z-index: 10;
+    opacity: 1;
+    pointer-events: initial;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8rem;
+    margin-bottom: 1rem;
+}
+
+.title h3 {
+    color: hsl(229, 25%, 31%);
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: 0.1em;
+}
+
+.cross {
+    cursor: pointer;
+}
+
+.modal img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.preload * {
+    transition: none;
+}
+
+
+/* ════════════════════════════════════════
+   TABLET  (max-width: 1024px)
+   ════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+    .score-bar {
+        width: 85%;
+        height: 120px;
+    }
+    .game {
+        column-gap: 5rem;
+        row-gap: 1.5rem;
+        padding-top: 2.5rem;
+        margin-top: 0.8rem;
+    }
+    .choice {
+        width: 8rem;
+        height: 8rem;
+    }
+}
+
+
+/* ════════════════════════════════════════
+   IPAD / SMALL TABLET  (max-width: 768px)
+   ════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    body {
+        justify-content: center;
+    }
+    /* Score Bar */
+    .score-bar {
+        width: 88%;
+        height: 110px;
+        padding: 10px 16px;
+        margin-top: 0;
+    }
+    .score {
+        width: 100px;
+        padding: 6px 12px;
+    }
+    .score h5 {
+        font-size: 13px;
+    }
+    .score h3 {
+        font-size: 2.8rem;
+    }
+    /* Game */
+    .game {
+        column-gap: 4rem;
+        row-gap: 1.2rem;
+        padding-top: 2rem;
+        margin-top: 0.8rem;
+    }
+    .game::before {
+        background-size: 68%;
+        left: 12%;
+        top: 28%;
+    }
+    .choice {
+        width: 7rem;
+        height: 7rem;
+    }
+    /* Results */
+    .results-heading {
+        font-size: 1.4rem;
+        margin-bottom: 4rem;
+    }
+    .results {
+        column-gap: 2rem;
+    }
+    .results-result {
+        transform: scale(1.2);
+    }
+    .results-text {
+        font-size: 2.3rem;
+    }
+    /* Rules button */
+    .rules-btn {
+        bottom: 1.5rem;
+        right: 1.5rem;
+    }
+    /* Modal — centered, fixed size, no margin tricks */
+    .modal {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 380px;
+        max-width: 88vw;
+        margin: 0;
+    }
+    .modal.active {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        margin-top: 0;
+    }
+    .title {
+        gap: 5rem;
+    }
+}
+
+
+/* ════════════════════════════════════════
+   MOBILE  (max-width: 480px)
+   ════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+    body {
+        justify-content: center;
+        padding-top: 0;
+        gap: 0;
+    }
+    /* Score Bar */
+    .score-bar {
+        width: 92%;
+        height: 90px;
+        margin-top: 0;
+        margin-bottom: 2rem;
+        padding: 8px 14px;
+        border-radius: 8px;
+    }
+    .score-bar img {
+        height: 45px;
+    }
+    .score {
+        width: 80px;
+        height: 85%;
+    }
+    .score h5 {
+        font-size: 11px;
+        letter-spacing: 0.07em;
+    }
+    .score h3 {
+        font-size: 2.2rem;
+    }
+    /* Game */
+    .game {
+        margin-top: 0;
+        padding-top: 2rem;
+        column-gap: 2.5rem;
+        row-gap: 0.8rem;
+    }
+    .game::before {
+        background-size: 58%;
+        left: 18%;
+        top: 26%;
+    }
+    .choice {
+        width: 5.5rem;
+        height: 5.5rem;
+    }
+    .choice img {
+        transform: scale(1.1);
+    }
+    .choice::before,
+    .choice::after {
+        left: -13%;
+        top: -15%;
+        width: 126%;
+        height: 126%;
+    }
+    /* Results */
+    .results {
+        column-gap: 0.5rem;
+        width: 95%;
+        margin: 0 auto;
+        margin-top: 1rem;
+    }
+    .results-heading {
+        font-size: 1rem;
+        letter-spacing: 0.07em;
+        margin-top: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+    .results-result {
+        width: 5.5rem;
+        height: 5.5rem;
+        transform: scale(1);
+    }
+    .results.show-winner {
+        place-items: center;
+        margin-top: 1rem;
+        column-gap: 0.5rem;
+    }
+    .results-text {
+        font-size: 1.6rem;
+        margin-bottom: 0.6rem;
+    }
+    .play-again {
+        padding: 0.5rem 1.5rem;
+        font-size: 0.95rem;
+    }
+    .winner .choice::after {
+        box-shadow: 0 0 0 20px #293251, 0 0 0 42px #232c4b, 0 0 0 65px #1e2949;
+    }
+    /* Rules — centered at bottom */
+    .rules-btn {
+        position: fixed;
+        bottom: 3.5rem;
+        right: 50%;
+        transform: translateX(50%);
+        padding: 0.5rem 2rem;
+        font-size: 1rem;
+    }
+    /* Modal — full screen on mobile */
+    .modal {
+        width: 100vw;
+        height: 100vh;
+        max-width: 100vw;
+        top: 0;
+        left: 0;
+        transform: none;
+        border-radius: 0;
+        padding: 2.5rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+    }
+    .modal.active {
+        top: 0;
+        left: 0;
+        transform: none;
+        margin-top: 0;
+    }
+    .title {
+        gap: 5rem;
+        width: 100%;
+    }
+    .title h3 {
+        font-size: 1.4rem;
+    }
+    .modal img {
+        max-width: 80%;
+    }
+}
+
+
+/* ════════════════════════════════════════
+   VERY SMALL  (max-width: 360px)
+   ════════════════════════════════════════ */
+
+@media (max-width: 360px) {
+    .score-bar img {
+        height: 36px;
+    }
+    .score {
+        width: 70px;
+    }
+    .score h3 {
+        font-size: 1.9rem;
+    }
+    .game {
+        column-gap: 2rem;
+        padding-top: 2rem;
+    }
+    .choice {
+        width: 4.8rem;
+        height: 4.8rem;
+    }
+    .results-heading {
+        font-size: 0.9rem;
+    }
+    .results-text {
+        font-size: 1.5rem;
+    }
+}
