@@ -42,7 +42,6 @@ project-folder/
 
 ## Live Demo
 
-Add your deployed website link here.
 
 ## What I Learned
 
